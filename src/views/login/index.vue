@@ -26,6 +26,7 @@
 
 <script>
 import axios from 'axios'
+// 引入极验
 import '@/vendor/gt'
 export default {
   name: 'AppLogin',
@@ -48,7 +49,28 @@ export default {
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
 
       }).then(res => {
-        console.log(res.data)
+        // console.log(res.data)
+        // const data = res.data.data
+        const { data } = res.data
+        window.initGeetest({
+          // 以下配置参数来自服务端 SDK
+          gt: data.gt,
+          challenge: data.challenge,
+          offline: !data.success,
+          new_captcha: true,
+          product: 'bind' // 隐藏式 直接弹出
+        }, function (captchaObj) {
+          captchaObj.onReady(function() {
+            // 验证码ready之后才能调用verify方法显示验证码
+            captchaObj.verify() // 弹出验证码内容框
+          }).onSuccess(function() {
+            console.log(captchaObj.getValidate())
+          }).onError(function() {
+            // your code
+          })
+
+          // 在这里注册“发送验证码”按钮点击事件，验证用户是否输入手机号以及手机号格式是否正确
+        })
       })
     }
   }
