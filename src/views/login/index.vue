@@ -93,6 +93,15 @@ export default {
       })
     },
     handleSendCode () {
+      // 验证手机号是否有效
+      this.$refs['form'].validateField('monile', errorMessage => {
+        if (errorMessage.trim().length > 0) {
+          return
+        }
+        this.showGeetest()
+      })
+    },
+    showGeetest () {
       const { mobile } = this.form
       axios({
         method: 'GET',
