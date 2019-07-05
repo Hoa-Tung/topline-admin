@@ -4,11 +4,16 @@
       <div class="from-head">
         <img src="./logo_index.png" alt="黑马头条号">
       </div>
-      <el-form class="login-from" ref="form" :model="form">
-        <el-form-item>
+      <el-form
+      class="login-from"
+      ref="form"
+      :model="form"
+      :rules="rules"
+      >
+        <el-form-item prop="mobile">
           <el-input v-model="form.mobile" placeholder="请输入您的手机号"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="code">
           <el-col :span="14">
             <el-input v-model="form.code" placeholder="请输入验证码"></el-input>
           </el-col>
@@ -35,11 +40,30 @@ export default {
       form: {
         mobile: '',
         code: ''
+      },
+      rules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { pattern: /\d{11}/, message: '请输入有效的手机号', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { pattern: /\d{6}/, message: '请输入有效的验证码', trigger: 'blur' }
+        ]
       }
     }
   },
   methods: {
     handleLogin () {
+      this.$refs['form'].validate(valid => {
+        if (!valid) {
+          return
+        }
+        // 表单验证通过 提交登陆请求
+        this.submitLogin()
+      })
+    },
+    submitLogin () {
       axios({
         method: 'POST',
         url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
@@ -47,7 +71,7 @@ export default {
       }).then(res => {
         console.log(res.data)
         this.$message({
-          // >= 200 && < 400 的状态码会进入then成功
+
           message: '登陆成功',
           type: 'success'
         })
